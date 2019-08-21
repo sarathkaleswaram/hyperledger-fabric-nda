@@ -136,6 +136,8 @@ function wallet() {
       http://localhost:3000/enrollAdmin \
       -H 'content-type: application/json' 
 
+    echo
+    
     curl -X POST \
       http://localhost:3000/registerUser \
       -H 'content-type: application/json' \
