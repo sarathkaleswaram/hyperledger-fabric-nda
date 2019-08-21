@@ -131,15 +131,17 @@ function wallet() {
   else 
     echo "============== Generating Wallet ============="
     mkdir wallet
-    npm run build
-    node dist/api/enrollAdmin.js
 
     curl -X POST \
-    http://localhost:3000/registerUser \
-    -H 'content-type: application/json' \
-    -d '{
-      "enrollmentID": "ksb"
-    }'
+      http://localhost:3000/enrollAdmin \
+      -H 'content-type: application/json' 
+
+    curl -X POST \
+      http://localhost:3000/registerUser \
+      -H 'content-type: application/json' \
+      -d '{
+        "enrollmentID": "ksb"
+      }'
   fi
 }
 
