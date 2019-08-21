@@ -4,6 +4,8 @@ CHANNEL_NAME=mychannel
 DELAY=3
 
 createChannel() {
+    sleep $DELAY
+
     peer channel create \
         -o orderer.example.com:7050 \
         -c $CHANNEL_NAME \
@@ -16,6 +18,8 @@ createChannel() {
 }
 
 joinChannel () {
+    sleep $DELAY
+
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     CORE_PEER_ADDRESS=peer0.org1.example.com:7051
     CORE_PEER_LOCALMSPID="Org1MSP"
@@ -50,12 +54,13 @@ joinChannel () {
 
     peer channel join -b mychannel.block
 
-    sleep $DELAY
     echo "===================== All peers joined channel '$CHANNEL_NAME' ===================== "
     echo
 }
 
 updateAnchorPeers() {
+    sleep $DELAY
+
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     CORE_PEER_ADDRESS=peer0.org1.example.com:7051
     CORE_PEER_LOCALMSPID="Org1MSP"
@@ -82,12 +87,13 @@ updateAnchorPeers() {
         --tls \
         --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
-    sleep $DELAY
     echo "===================== Anchor peers updated on channel '$CHANNEL_NAME' ===================== "
     echo
 }
 
 installChaincode() {
+    sleep $DELAY
+
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     CORE_PEER_ADDRESS=peer0.org1.example.com:7051
     CORE_PEER_LOCALMSPID="Org1MSP"
@@ -112,12 +118,13 @@ installChaincode() {
         -p github.com/chaincode/ \
         -l golang
 
-    sleep $DELAY
     echo "===================== Chaincode is installed on all peers ===================== "
     echo
 }
 
 instantiateChaincode() {
+    sleep $DELAY
+
     CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     CORE_PEER_ADDRESS=peer0.org1.example.com:7051
     CORE_PEER_LOCALMSPID="Org1MSP"
@@ -138,12 +145,13 @@ instantiateChaincode() {
         --peerAddresses peer0.org1.example.com:7051 \
         --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 
-    sleep $DELAY
     echo "===================== Chaincode is instantiated on channel '$CHANNEL_NAME' ===================== "
     echo
 }
 
 chaincodeInvoke() {
+    sleep $DELAY
+    
     peer chaincode invoke \
         -o orderer.example.com:7050 \
         -C $CHANNEL_NAME \
@@ -157,7 +165,6 @@ chaincodeInvoke() {
         --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
         --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 
-    sleep $DELAY
     echo "===================== Invoke transaction successful on channel '$CHANNEL_NAME' ===================== "
     echo
 }
