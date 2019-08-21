@@ -126,13 +126,13 @@ function startAPI() {
 
 function wallet() {
   cd nda
-  if [ -d wallet ]; then
+  if [ -d wallet/admin ]; then
     echo "============== Wallet already exists ============="
   else 
     echo "============== Generating Wallet ============="
     mkdir wallet
     npm run build
-    node dist/enrollAdmin.js
+    node dist/api/enrollAdmin.js
 
     curl -X POST \
     http://localhost:3000/registerUser \
