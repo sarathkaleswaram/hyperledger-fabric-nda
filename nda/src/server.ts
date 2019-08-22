@@ -22,36 +22,43 @@ app.get("/", (req, res) => {
 })
 
 app.post("/login", async (req, res) => {
+    console.log("/login")
     let response = await login(req)
     res.json(response)
 })
 
 app.post("/enrollAdmin", async (req, res) => {
+    console.log("/enrollAdmin")
     let response = await enrollAdmin()
     res.json(response)
 })
 
 app.post("/registerUser", async (req, res) => {
+    console.log("/registerUser")
     let response = await registerUser(req)
     res.json(response)
 })
 
 app.post("/invoke", async (req, res) => {
+    console.log("/invoke")
     let response = await invoke(req)
     res.json(response)
 })
 
 app.post("/queryAllParties", async (req, res) => {
+    console.log("/queryAllParties")
     let response = await queryAllParties(req)
     res.json(response)
 })
 
 app.post("/getAllNDA", async (req, res) => {
+    console.log("/getAllNDA")
     let response = await getAllNDA(req)
     res.json(response)
 })
 
 app.post("/getNDATxs", async (req, res) => {
+    console.log("/getNDATxs")
     let response = await getNDATxs(req)
     res.json(response)
 })

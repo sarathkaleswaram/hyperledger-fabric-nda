@@ -262,6 +262,15 @@ func (s *SmartContract) submitNDA(APIstub shim.ChaincodeStubInterface, args []st
 		buffer.WriteString("Receiving Party does not exists.")
 		return shim.Success(buffer.Bytes())
 	}
+
+	now := time.Now()
+	parseTime, _ := time.Parse("2006-01-02", now.Format("2006-01-02"))
+	ndaDate, _ := time.Parse("2006-01-02", args[5])
+	if ndaDate.Before(parseTime) {
+		buffer.WriteString("Your NDA has expired. Please contact administrator.")
+		return shim.Success(buffer.Bytes())
+	}
+
 	var NDA = NDA{DisclosingParty: args[1], DisclosingPartyLocation: args[2], ReceivingParty: args[3], ReceivingPartyLocation: args[4], Date: args[5], Regarding: args[6], AgreementSign: args[7], Status: "Agreed"}
 	ndaAsBytes, _ := json.Marshal(NDA)
 	APIstub.PutState(args[0], ndaAsBytes)

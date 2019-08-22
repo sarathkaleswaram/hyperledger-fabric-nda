@@ -17,7 +17,6 @@ export default async function registerUser(request) {
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the enrollmentID.
         const userExists = await wallet.exists(enrollmentID);

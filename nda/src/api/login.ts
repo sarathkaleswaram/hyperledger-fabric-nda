@@ -28,7 +28,12 @@ export default async function login(request) {
 
         try {
             let buttons = [];
-            let party = JSON.parse(loginResult.toString());
+            let party;
+            try {
+                party = JSON.parse(loginResult.toString());                
+            } catch (error) {
+                throw loginResult.toString();                
+            }
             if (party.Record.type == "admin") {
                 buttons.push({label: "Add NDA", route: "/add-nda"}, {label: "Transactions", route: "/transactions"});
                 return {
@@ -38,13 +43,23 @@ export default async function login(request) {
                     buttons: buttons
                 }
             } else {
-                buttons.push({label: "Agreement", route: "/agreement"}, {label: "Transactions", route: "/transactions"});
                 const result = await contract.submitTransaction('getNDA', party.Record.name.toUpperCase());
+                buttons.push({label: "Agreement", route: "/agreement"}, {label: "Transactions", route: "/transactions"});
+                let nda;
+                if (result.toString().length > 1) {
+                    nda = JSON.parse(result.toString());
+                    if (nda.status == "Agreed") {
+                        buttons = [];
+                        buttons.push({label: "Agreement", route: "/agreement-print"}, {label: "Transactions", route: "/transactions"});
+                    }
+                } else {
+                    nda = null;
+                }
                 return {
                     status: 'SUCCESS',
                     enrollmentID: enrollmentID,
                     partyKey: party.Key,
-                    nda: result.toString().length > 1 ? JSON.parse(result.toString()) : null,
+                    nda: nda,
                     buttons: buttons
                 }
             }

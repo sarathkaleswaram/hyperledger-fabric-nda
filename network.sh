@@ -93,8 +93,6 @@ function networkUp() {
     echo "ERROR !!!!"
     exit 1
   fi
-
-  echo "============== Successfully started the network ============="
 }
 
 
@@ -103,7 +101,7 @@ function networkDown() {
   export NDA_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
 
   docker-compose down --volumes --remove-orphans
-  docker rmi -f $(docker images | grep dev | awk {'print $3'})
+  docker rmi -f $(docker images | grep nda | awk {'print $3'})
   docker container rm $(docker container ps -aq)
   y | docker network prune
   echo
@@ -137,7 +135,7 @@ function wallet() {
       -H 'content-type: application/json' 
 
     echo
-    
+
     curl -X POST \
       http://localhost:3000/registerUser \
       -H 'content-type: application/json' \
