@@ -44,7 +44,7 @@ function generateChannelArtifacts() {
 	fi
 
   echo "==============  Generating Orderer Genesis block =============="
-  configtxgen -profile TwoOrgsOrdererGenesis -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
+  configtxgen -profile NDA_Profile -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate orderer genesis block..."
@@ -52,7 +52,7 @@ function generateChannelArtifacts() {
   fi
   echo
   echo "==============  Generating channel configuration transaction 'channel.tx' =============="
-  configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+  configtxgen -profile NDA_Profile -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate channel configuration transaction..."
@@ -60,18 +60,10 @@ function generateChannelArtifacts() {
   fi
   echo
   echo "==============  Generating anchor peer update for Org1MSP  =============="
-  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+  configtxgen -profile NDA_Profile -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate anchor peer update for Org1MSP..."
-    exit 1
-  fi
-  echo
-  echo "============== Generating anchor peer update for Org2MSP   =============="
-  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
-  res=$?
-  if [ $res -ne 0 ]; then
-    echo "Failed to generate anchor peer update for Org2MSP..."
     exit 1
   fi
 }
@@ -79,7 +71,6 @@ function generateChannelArtifacts() {
 
 function networkUp() {
   export NDA_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-  export NDA_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
 
   docker-compose up -d
   docker ps -a
@@ -98,7 +89,6 @@ function networkUp() {
 
 function networkDown() {
   export NDA_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-  export NDA_CA2_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
 
   docker-compose down --volumes --remove-orphans
   docker rmi -f $(docker images | grep nda | awk {'print $3'})
