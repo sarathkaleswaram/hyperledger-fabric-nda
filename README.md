@@ -27,7 +27,7 @@ To start API
 To generate wallet keys to access fabric through API
 
 ```
-./network.sh wallet
+./network.sh init
 ```
 
 To bring network down
@@ -47,7 +47,6 @@ If running with IBM Blockchain Platform - modify nda/config.json
     "appAdminSecret": "app-adminpw",
     "orgMSPID": "org1msp",
     "caName": "173.193.82.18:32671",
-    "userName": "user1",
     "gatewayDiscovery": { "enabled": true, "asLocalhost": false }
 }
 ```
@@ -64,7 +63,6 @@ If running in local
     "appAdminSecret": "adminpw",
     "orgMSPID": "Org1MSP",
     "caName": "ca.org1.example.com",
-    "userName": "user1",
     "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
 }
 ```
