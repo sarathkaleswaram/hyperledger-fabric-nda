@@ -6,7 +6,7 @@ function printHelp() {
   echo "	./network.sh up"
   echo "	./network.sh down"
   echo "	./network.sh start"
-  echo "	./network.sh wallet"  
+  echo "	./network.sh init"  
 }
 
 function generateCerts() {
@@ -95,6 +95,10 @@ function networkDown() {
   docker container rm $(docker container ps -aq)
   y | docker network prune
   echo
+  
+  rm -rf nda/wallet
+  sudo rm -rf data/
+  echo
 }
 
 function startAPI() {
@@ -112,7 +116,7 @@ function startAPI() {
   npm run start:watch
 }
 
-function wallet() {
+function init() {
   cd nda
   if [ -d wallet/admin ]; then
     echo "============== Wallet already exists ============="
@@ -127,10 +131,15 @@ function wallet() {
     echo
 
     curl -X POST \
-      http://localhost:3000/registerUser \
+      http://localhost:3000/registerParty \
       -H 'content-type: application/json' \
       -d '{
-        "enrollmentID": "ksb"
+        "name": "Blockmatrix",
+        "ceo": "Praveen",
+        "location": "Hyderabad",
+        "username": "blockmatrix",
+        "password": "password",
+        "type": "admin"
       }'
   fi
 }
@@ -148,8 +157,8 @@ elif [ "${MODE}" == "generate" ]; then
   generateChannelArtifacts
 elif [ "${MODE}" == "start" ]; then
   startAPI
-elif [ "${MODE}" == "wallet" ]; then
-  wallet
+elif [ "${MODE}" == "init" ]; then
+  init
 else
   printHelp
   exit 1

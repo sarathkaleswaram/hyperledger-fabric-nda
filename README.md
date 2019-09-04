@@ -46,12 +46,13 @@ If running with IBM Blockchain Platform - modify nda/config.json
     "appAdmin": "app-admin",
     "appAdminSecret": "app-adminpw",
     "orgMSPID": "org1msp",
-    "caName": "173.193.82.18:32017",
+    "caName": "173.193.82.18:32671",
     "userName": "user1",
     "gatewayDiscovery": { "enabled": true, "asLocalhost": false }
 }
 ```
-change 'caName' as generated from IBP
+Change 'caName' as generated from IBP. 
+Run ``` docker-compose up -d mongo``` to start mongodb
 
 If running in local
 ```

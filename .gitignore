@@ -3,3 +3,5 @@
 /channel-artifacts/*.tx
 /channel-artifacts/*.block
 /crypto-config/*
+
+data

@@ -98,27 +98,6 @@ instantiateChaincode() {
     echo
 }
 
-chaincodeInvoke() {
-    sleep $DELAY
-
-    CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-    CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA_CERT
-    
-    peer chaincode invoke \
-        -o orderer.example.com:7050 \
-        -C $CHANNEL_NAME \
-        -n nda \
-        -c '{"function":"initParties","Args":[]}' \
-        --waitForEvent \
-        --tls \
-        --cafile $ORDERER_TLS_CERT \
-        --peerAddresses peer0.org1.example.com:7051 \
-        --tlsRootCertFiles $PEER0_ORG1_CA_CERT
-
-    echo "===================== Invoke transaction successful on channel '$CHANNEL_NAME' ===================== "
-    echo
-}
-
 
 CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 CORE_PEER_LOCALMSPID="Org1MSP"
@@ -140,6 +119,3 @@ installChaincode
 
 echo "Instantiating chaincode..."
 instantiateChaincode
-
-echo "Sending invoke transaction..."
-chaincodeInvoke

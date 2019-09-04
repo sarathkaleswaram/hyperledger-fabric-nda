@@ -1,6 +1,7 @@
 import { FileSystemWallet, Gateway } from 'fabric-network';
 import * as path from 'path';
 import * as fs from 'fs';
+import parties from '../models/parties';
 
 // capture network variables from config.json
 const configPath = path.join(__dirname, '..', '..', 'config.json');
@@ -18,8 +19,7 @@ export default async function getNDATxs(request) {
 
         if (request.body === undefined || 
             request.body === null ||
-            request.body.enrollmentID === undefined ||
-            request.body.partyKey === undefined) {
+            request.body.enrollmentID === undefined) {
             return {
                 status: 'FAILED',
                 message: "Invalid Request."
@@ -27,7 +27,6 @@ export default async function getNDATxs(request) {
         }
 
         let enrollmentID = request.body.enrollmentID;
-        let partyKey = request.body.partyKey;
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
@@ -53,8 +52,11 @@ export default async function getNDATxs(request) {
         // Get the contract from the network.
         const contract = network.getContract(chaincode);
 
+        let party = await parties.findOne({username: enrollmentID}).exec();
+        let ndaKey = party.type == "admin" ? "admin" : party.ndaKey;
+
         // Evaluate the specified transaction.
-        const result = await contract.evaluateTransaction('getNDATxs', partyKey);
+        const result = await contract.evaluateTransaction('getNDATxs', ndaKey);
         return {
             status: 'SUCCESS',
             message: JSON.parse(result.toString())

@@ -1,6 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import * as md5 from 'md5';
 import { FileSystemWallet, Gateway } from 'fabric-network';
+import parties from '../models/parties';
+import ndaForm from '../models/nda-form';
 
 // capture network variables from config.json
 const configPath = path.join(__dirname, '..', '..', 'config.json');
@@ -25,6 +28,8 @@ export default async function login(request) {
         }
     }
 
+    let username = request.body.username;
+
     try {
         const walletPath = await path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
@@ -34,41 +39,37 @@ export default async function login(request) {
         await gateway.connect(ccpPath, { wallet, identity: enrollmentID, discovery: gatewayDiscovery });
         const network = await gateway.getNetwork(channel);
         const contract = network.getContract(chaincode);
-        const loginResult = await contract.evaluateTransaction('loginParty', request.body.username, request.body.password);
 
         try {
             let buttons = [];
-            let party;
-            try {
-                party = JSON.parse(loginResult.toString());                
-            } catch (error) {
-                throw loginResult.toString();                
+            let party = await parties.findOne({ username: username, password: md5(request.body.password) }).exec();
+            if (party == null) {
+                return {
+                    status: 'FAILED',
+                    message: "Invalid Credentials."
+                }
             }
-            if (party.Record.type == "admin") {
-                buttons.push({label: "Add NDA", route: "/add-nda"}, {label: "Transactions", route: "/transactions"});
+            if (party.type == "admin") {
+                buttons.push({ label: "Add NDA", route: "/add-nda" }, { label: "Transactions", route: "/transactions" });
                 return {
                     status: 'SUCCESS',
-                    enrollmentID: enrollmentID,
-                    partyKey: party.Key,
+                    enrollmentID: username,
                     buttons: buttons
                 }
             } else {
-                const result = await contract.evaluateTransaction('getNDA', party.Record.name.toUpperCase());
-                buttons.push({label: "Agreement", route: "/agreement"}, {label: "Transactions", route: "/transactions"});
                 let nda;
-                if (result.toString().length > 1) {
+                if (party.ndaSubmitted) {
+                    const result = await contract.evaluateTransaction('getNDA', party.ndaKey);
                     nda = JSON.parse(result.toString());
-                    if (nda.status == "Agreed") {
-                        buttons = [];
-                        buttons.push({label: "Agreement", route: "/agreement-print"}, {label: "Transactions", route: "/transactions"});
-                    }
+                    buttons.push({label: "Agreement", route: "/agreement-print"}, {label: "Transactions", route: "/transactions"});
                 } else {
-                    nda = null;
+                    let ndaData = await ndaForm.findOne({partyusername: username}).exec();
+                    nda = ndaData;
+                    buttons.push({label: "Agreement", route: "/agreement"}, {label: "Transactions", route: "/transactions"});
                 }
                 return {
                     status: 'SUCCESS',
-                    enrollmentID: enrollmentID,
-                    partyKey: party.Key,
+                    enrollmentID: username,
                     nda: nda,
                     buttons: buttons
                 }

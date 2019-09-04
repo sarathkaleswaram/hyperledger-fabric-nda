@@ -1,17 +1,25 @@
 import * as express from "express"
 import * as bodyParser from 'body-parser';
+import * as mongoose from "mongoose";
 import cors = require('cors');
 
 import login from "./api/login"
 import enrollAdmin from "./api/enrollAdmin"
-import registerUser from "./api/registerUser"
-import invoke from "./api/invoke"
-import queryAllParties from "./api/queryAllParties"
+import registerParty from "./api/registerParty"
+import submitNDA from "./api/submitNDA"
+import initNDA from "./api/initNDA"
 import getAllNDA from "./api/getAllNDA"
 import getNDATxs from "./api/getNDATxs"
 
 const app = express()
 const PORT = process.env.PORT || 3000
+
+let mongoConnectionString = "mongodb://127.0.0.1:27017/nda";
+
+mongoose.connect(mongoConnectionString, { useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false });
+let db = mongoose.connection;
+db.once('open', () => console.log('MongoDB Successfully Connected!'));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.options('*', cors())
 app.use(cors())
@@ -21,33 +29,34 @@ app.get("/", (req, res) => {
     res.send("<h1>NDA Running on Hyperledger</h1>")
 })
 
-app.post("/login", async (req, res) => {
-    console.log("/login")
-    let response = await login(req)
-    res.json(response)
-})
-
 app.post("/enrollAdmin", async (req, res) => {
     console.log("/enrollAdmin")
     let response = await enrollAdmin()
     res.json(response)
 })
 
-app.post("/registerUser", async (req, res) => {
-    console.log("/registerUser")
-    let response = await registerUser(req)
+app.post("/registerParty", async (req, res) => {
+    console.log("/registerParty")
+    let response = await registerParty(req)
     res.json(response)
 })
 
-app.post("/invoke", async (req, res) => {
-    console.log("/invoke")
-    let response = await invoke(req)
+app.post("/login", async (req, res) => {
+    console.log("/login")
+    let response = await login(req)
     res.json(response)
 })
 
-app.post("/queryAllParties", async (req, res) => {
-    console.log("/queryAllParties")
-    let response = await queryAllParties(req)
+app.post("/initNDA", async (req, res) => {
+    console.log("/initNDA")
+    initNDA(req, function (response) {
+        res.json(response)        
+    })
+})
+
+app.post("/submitNDA", async (req, res) => {
+    console.log("/submitNDA")
+    let response = await submitNDA(req)
     res.json(response)
 })
 

@@ -191,3 +191,11 @@ services:
       - peer0.org1.example.com
     networks:
       - nda
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
