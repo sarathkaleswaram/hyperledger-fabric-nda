@@ -55,6 +55,13 @@ export default async function getNDATxs(request) {
         let party = await parties.findOne({username: enrollmentID}).exec();
         let ndaKey = party.type == "admin" ? "admin" : party.ndaKey;
 
+        if (!ndaKey) {
+            return {
+                status: 'SUCCESS',
+                message: []
+            }
+        }
+
         // Evaluate the specified transaction.
         const result = await contract.evaluateTransaction('getNDATxs', ndaKey);
         return {

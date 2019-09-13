@@ -110,7 +110,7 @@ peer chaincode invoke \
     -o orderer.example.com:7050 \
     -C mychannel \
     -n nda \
-    -c '{"function":"getAllNDA","Args":[]}' \
+    -c '{"function":"submitNDA","Args":["NDA1", "Person1", "Bang", "Blockmatrix", "HYD", "2019-12-12", "Explorer", "sign"]}' \
     --waitForEvent \
     --tls \
     --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
