@@ -110,13 +110,24 @@ peer chaincode invoke \
     -o orderer.example.com:7050 \
     -C mychannel \
     -n nda \
-    -c '{"function":"submitNDA","Args":["NDA1", "Person1", "Bang", "Blockmatrix", "HYD", "2019-12-12", "Explorer", "sign"]}' \
+    -c '{"function":"submitNDA","Args":["NDA1", "Person1", "Bang", "Blockmatrix", "HYD", "2100-12-12", "Explorer", "sign"]}' \
     --waitForEvent \
     --tls \
     --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
     --peerAddresses peer0.org1.example.com:7051 \
     --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 
+
+peer chaincode invoke \
+    -o orderer.example.com:7050 \
+    -C mychannel \
+    -n nda \
+    -c '{"function":"getNDA","Args":["NDA1"]}' \
+    --waitForEvent \
+    --tls \
+    --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 ```
 
 Open new Terminal - Go to nda/ directory 

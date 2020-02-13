@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer
+  template:
+    metadata:
+      labels:
+        app: orderer
+    spec:
+      volumes:
+        - name: ndafiles
+          persistentVolumeClaim:
+            claimName: nda-pvc
+      containers:
+        - name: orderer
+          image: hyperledger/fabric-orderer:1.4.4
+          env:
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: 0.0.0.0
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "31010"
+            - name: ORDERER_GENERAL_GENESISMETHOD
+              value: file
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: /var/hyperledger/orderer/orderer.genesis.block
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: OrdererMSP
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: /var/hyperledger/orderer/msp
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "false"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/orderer/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/orderer/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/ca.crt]"
+            - name: ORDERER_KAFKA_VERBOSE
+              value: "true"
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+              value: /var/hyperledger/orderer/tls/server.crt
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+              value: /var/hyperledger/orderer/tls/server.key
+            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/ca.crt]"
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          command: ["orderer"]
+          volumeMounts:
+            - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+              name: ndafiles
+              subPath: channel-artifacts/genesis.block
+            - mountPath: /var/hyperledger/orderer/msp
+              name: ndafiles
+              subPath: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp
+            - mountPath: /var/hyperledger/orderer/tls
+              name: ndafiles
+              subPath: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer
+spec:
+  selector:
+    app: orderer
+  type: NodePort
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 31010
+      targetPort: 31010
+      nodePort: 31010
