@@ -29,14 +29,14 @@ spec:
             - name: FABRIC_CA_SERVER_TLS_CERTFILE
               value: /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
             - name: FABRIC_CA_SERVER_TLS_KEYFILE
-              value: /etc/hyperledger/fabric-ca-server-config/622360c9dc5c9e83aec7466dc809b6d10cb9b5efaf84a1bcfb857f5b45a6954a_sk
+              value: /etc/hyperledger/fabric-ca-server-config/291c5f15c4eb9f000106b5d26a9380f4d07ddc48436f07fa9404ada354c1070e_sk
           ports:
             - containerPort: 7054
           command: ["sh"]
           args:
             [
               "-c",
-              " fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/622360c9dc5c9e83aec7466dc809b6d10cb9b5efaf84a1bcfb857f5b45a6954a_sk -b admin:adminpw -d",
+              " fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/291c5f15c4eb9f000106b5d26a9380f4d07ddc48436f07fa9404ada354c1070e_sk -b admin:adminpw -d",
             ]
           volumeMounts:
             - mountPath: /etc/hyperledger/fabric-ca-server-config

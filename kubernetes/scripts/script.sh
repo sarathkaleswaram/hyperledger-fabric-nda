@@ -75,6 +75,7 @@ installChaincode() {
     echo
     peer chaincode list --installed
     echo "===================== Chaincode installed list ===================== "
+    echo
 }
 
 instantiateChaincode() {
@@ -113,6 +114,7 @@ queryChaincode() {
     echo
     peer chaincode list --instantiated -C $CHANNEL_NAME
     echo "===================== Chaincode instantiated list ===================== "
+    echo
 }
 
 
