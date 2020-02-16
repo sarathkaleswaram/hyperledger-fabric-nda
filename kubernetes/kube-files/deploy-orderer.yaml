@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: orderer
+  name: nda-orderer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: orderer
+      name: nda-orderer
   template:
     metadata:
       labels:
-        app: orderer
+        name: nda-orderer
     spec:
       volumes:
         - name: ndafiles
           persistentVolumeClaim:
             claimName: nda-pvc
       containers:
-        - name: orderer
+        - name: nda-orderer
           image: hyperledger/fabric-orderer:1.4.4
           env:
             - name: FABRIC_LOGGING_SPEC
-              value: INFO
+              value: info
             - name: ORDERER_GENERAL_LISTENADDRESS
               value: 0.0.0.0
             - name: ORDERER_GENERAL_LISTENPORT
-              value: "31010"
+              value: "30750"
             - name: ORDERER_GENERAL_GENESISMETHOD
               value: file
             - name: ORDERER_GENERAL_GENESISFILE
@@ -41,14 +41,6 @@ spec:
             - name: ORDERER_GENERAL_TLS_CERTIFICATE
               value: /var/hyperledger/orderer/tls/server.crt
             - name: ORDERER_GENERAL_TLS_ROOTCAS
-              value: "[/var/hyperledger/orderer/tls/ca.crt]"
-            - name: ORDERER_KAFKA_VERBOSE
-              value: "true"
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
-              value: /var/hyperledger/orderer/tls/server.crt
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
-              value: /var/hyperledger/orderer/tls/server.key
-            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
               value: "[/var/hyperledger/orderer/tls/ca.crt]"
           workingDir: /opt/gopath/src/github.com/hyperledger/fabric
           command: ["orderer"]
@@ -67,14 +59,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: orderer
+  name: nda-orderer
 spec:
   selector:
-    app: orderer
+    name: nda-orderer
   type: NodePort
   ports:
     - name: grpc
       protocol: TCP
-      port: 31010
-      targetPort: 31010
-      nodePort: 31010
+      port: 30750
+      targetPort: 30750
+      nodePort: 30750

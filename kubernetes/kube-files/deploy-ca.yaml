@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ca
+  name: nda-ca
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ca
+      app: nda-ca
   template:
     metadata:
       labels:
-        app: ca
+        app: nda-ca
     spec:
       volumes:
         - name: ndafiles
           persistentVolumeClaim:
             claimName: nda-pvc
       containers:
-        - name: ca
+        - name: nda-ca
           image: hyperledger/fabric-ca:1.4.4
           env:
             - name: FABRIC_CA_HOME
@@ -29,14 +29,14 @@ spec:
             - name: FABRIC_CA_SERVER_TLS_CERTFILE
               value: /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
             - name: FABRIC_CA_SERVER_TLS_KEYFILE
-              value: /etc/hyperledger/fabric-ca-server-config/6825559c28c2988e0a95cc3e6717cfb95a1667a10a0e3ce37f77240d0ab75c2c_sk
+              value: /etc/hyperledger/fabric-ca-server-config/622360c9dc5c9e83aec7466dc809b6d10cb9b5efaf84a1bcfb857f5b45a6954a_sk
           ports:
             - containerPort: 7054
           command: ["sh"]
           args:
             [
               "-c",
-              " fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/6825559c28c2988e0a95cc3e6717cfb95a1667a10a0e3ce37f77240d0ab75c2c_sk -b admin:adminpw -d",
+              " fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/622360c9dc5c9e83aec7466dc809b6d10cb9b5efaf84a1bcfb857f5b45a6954a_sk -b admin:adminpw -d",
             ]
           volumeMounts:
             - mountPath: /etc/hyperledger/fabric-ca-server-config
@@ -47,14 +47,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ca
+  name: nda-ca
 spec:
   selector:
-    app: ca
+    app: nda-ca
   type: NodePort
   ports:
     - name: endpoint
       protocol: TCP
-      port: 30054
+      port: 30754
       targetPort: 7054
-      nodePort: 30054
+      nodePort: 30754

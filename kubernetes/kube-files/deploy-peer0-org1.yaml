@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: peer0-org1
+  name: nda-peer0-org1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: peer0-org1
+      name: nda-peer0-org1
   template:
     metadata:
       labels:
-        app: peer0-org1
+        name: nda-peer0-org1
     spec:
       volumes:
         - name: ndafiles
@@ -23,21 +23,25 @@ spec:
           hostPath:
             path: /var/run/docker.sock
       containers:
-        - name: peer0-org1
+        - name: nda-peer0-org1
           image: hyperledger/fabric-peer:1.4.4
           env:
             - name: CORE_VM_ENDPOINT
               value: unix:///host/var/run/docker.sock
-            - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
-              value: "bridge"
+            - name: CORE_VM_DOCKER_ATTACHSTDOUT
+              value: "true"
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "true"
             - name: FABRIC_LOGGING_SPEC
               value: INFO
-            - name: CORE_PEER_TLS_ENABLED
-              value: "false"
+            - name: CORE_PEER_GOSSIP_USELEADERELECTION
+              value: "true"
             - name: CORE_PEER_GOSSIP_ORGLEADER
               value: "false"
             - name: CORE_PEER_PROFILE_ENABLED
               value: "true"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "false"
             - name: CORE_PEER_TLS_CERT_FILE
               value: /etc/hyperledger/fabric/tls/server.crt
             - name: CORE_PEER_TLS_KEY_FILE
@@ -45,25 +49,28 @@ spec:
             - name: CORE_PEER_TLS_ROOTCERT_FILE
               value: /etc/hyperledger/fabric/tls/ca.crt
             - name: CORE_PEER_ID
-              value: "peer0-org1"
+              value: nda-peer0-org1
             - name: CORE_PEER_ADDRESS
-              value: "peer0-org1:30110"
+              value: nda-peer0-org1:30751
             - name: CORE_PEER_LISTENADDRESS
-              value: 0.0.0.0:30110
-            - name: CORE_PEER_CHAINCODEADDRESS
-              value: "peer0-org1:30111"
-            - name: CORE_PEER_CHAINCODELISTENADDRESS
-              value: 0.0.0.0:30111
+              value: 0.0.0.0:30751
+            - name: CORE_PEER_EVENTS_ADDRESS
+              value: 0.0.0.0:30752
             - name: CORE_PEER_GOSSIP_BOOTSTRAP
-              value: "peer0-org1:30110"
+              value: nda-peer0-org1:30751
             - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
-              value: "peer0-org1:30110"
+              value: nda-peer0-org1:30751
             - name: CORE_PEER_LOCALMSPID
               value: Org1MSP
-            - name: ORDERER_URL
-              value: orderer:31010
-            - name: CORE_PEER_NETWORKID
-              value: nid1
+            # CouchDB
+            - name: CORE_LEDGER_STATE_STATEDATABASE
+              value: "CouchDB"
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+              value: "localhost:5984"
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+              value: ""
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+              value: ""
           workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
           command: ["peer"]
           args: ["node", "start"]
@@ -79,23 +86,39 @@ spec:
             - mountPath: /host/var/run/docker.sock
               name: dockersocket
 
+        - name: nda-couchdb0
+          image: hyperledger/fabric-couchdb:0.4.18
+          env:
+            - name: COUCHDB_USER
+              value: ""
+            - name: COUCHDB_PASSWORD
+              value: ""
+          ports:
+            - name: couchdb0
+              containerPort: 5984
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: peer0-org1
+  name: nda-peer0-org1
 spec:
   selector:
-    name: peer0-org1
+    name: nda-peer0-org1
   type: NodePort
   ports:
-  - protocol: TCP
-    nodePort: 30110
-    targetPort: 30110
-    port: 30110
-    name: grpc
-  - protocol: TCP
-    nodePort: 30111
-    targetPort: 30111
-    port: 30111
-    name: events
+    - name: grpc
+      protocol: TCP
+      port: 30751
+      targetPort: 30751
+      nodePort: 30751
+    - name: chaincode
+      protocol: TCP
+      port: 30752
+      targetPort: 30751
+      nodePort: 30752
+    - name: couchdb0
+      protocol: TCP
+      port: 5984
+      targetPort: 5984
+      nodePort: 30984
