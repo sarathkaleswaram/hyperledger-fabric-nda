@@ -90,3 +90,7 @@ peer chaincode query -C mychannel -n nda -c '{"Args":["getAllNDA"]}'
 ```
 
 CouchDB: ip_address:30984/_utils, ip_address:30985/_utils
+
+kubectl exec -it $(kubectl get pods | grep blockchain-explorer-db | awk '{print $1}') -- /bin/bash
+
+kubectl cp config/ nda-copy-files:/opt/share/

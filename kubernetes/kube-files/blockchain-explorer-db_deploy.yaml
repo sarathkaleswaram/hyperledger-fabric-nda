@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockchain-explorer-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: blockchain-explorer-db
+  template:
+    metadata:
+      labels:
+        name: blockchain-explorer-db
+    spec:
+      volumes:
+        - name: ndafiles
+          persistentVolumeClaim:
+            claimName: nda-pvc
+      containers:
+        - name: postgres
+          image: postgres:10.4-alpine
+          env:
+            - name: DATABASE_DATABASE
+              value: fabricexplorer
+            - name: DATABASE_USERNAME
+              value: hppoc
+            - name: DATABASE_PASSWORD
+              value: password
+          volumeMounts:
+            - mountPath: /fabric
+              name: ndafiles
+          ports:
+            - containerPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blockchain-explorer-db
+  labels:
+    run: explorer-db
+spec:
+  type: NodePort
+  selector:
+    name: explorer-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 30432
+      name: pgsql
