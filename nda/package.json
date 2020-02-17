@@ -27,7 +27,7 @@
         "fabric-ca-client": "~1.4.0",
         "fabric-network": "~1.4.0",
         "md5": "^2.2.1",
-        "mongoose": "^5.6.11",
+        "mongoose": "^5.7.5",
         "request": "^2.88.0"
     },
     "devDependencies": {
