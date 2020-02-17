@@ -2,12 +2,12 @@ FROM node:8.15.0-alpine
 
 ENV MONGO_URL mongo:27017
 
-ENV DEFAULT_WORKDIR /opt
-ENV NDA_APP_PATH $DEFAULT_WORKDIR/hyperledger-fabric-nda
+ENV DEFAULT_WORKDIR /opt/hyperledger-fabric-nda
+ENV NDA_APP_PATH $DEFAULT_WORKDIR/nda
 
-WORKDIR $DEFAULT_WORKDIR
+WORKDIR $NDA_APP_PATH
 
-COPY . $NDA_APP_PATH
+COPY . $DEFAULT_WORKDIR
 
 RUN apk add --no-cache --virtual npm-deps python make g++ && \
     python -m ensurepip && \

@@ -1,0 +1,18 @@
+version: "2"
+services:
+  nda-backend:
+    container_name: nda-backend
+    image: sarathkaleswaram/nda-backend:1.0.1
+    environment:
+      - MONGO_URL=mongo:27017 
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
