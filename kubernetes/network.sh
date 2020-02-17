@@ -251,7 +251,7 @@ function startAPI() {
   backendMongoDBStatus=$(kubectl get pods -l name=nda-backend-mongodb --output=jsonpath={.items..phase})
 
   while [ "${backendMongoDBStatus}" != "Running" ]; do
-    echo "Wating for Explorer Database to run. Current status of Deployment is ${backendMongoDBStatus}"
+    echo "Wating for Backend MongoDB to run. Current status of Deployment is ${backendMongoDBStatus}"
     sleep 5;
     if [ "${backendMongoDBStatus}" == "Error" ]; then
       echo "There is an error in the Explorer Deployment. Please check logs."
