@@ -1,0 +1,10 @@
+.vscode
+
+channel-artifacts
+crypto-config
+ibm_cds
+kubernetes
+scripts
+data
+
+nda/node_modules

@@ -1,11 +1,15 @@
-FROM node:alpine
+FROM node:8.15.0-alpine
 
 COPY . .
 
-RUN cd nda
+RUN apk add --no-cache --virtual npm-deps python make g++ && \
+    python -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip install --upgrade pip setuptools && \
+	rm -r /root/.cache
 
-RUN npm install
+RUN cd nda && npm install
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:watch"]
+RUN cd nda && npm run start:watch
