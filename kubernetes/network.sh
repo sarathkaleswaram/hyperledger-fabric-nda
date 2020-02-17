@@ -76,7 +76,6 @@ function networkUp() {
 
   kubectl create -f kube-files/persistent-volume.yaml
   kubectl create -f kube-files/pod-files.yaml
-  sleep 5
 
   filesPodStatus=$(kubectl get pods -l app=nda-copy-files --output=jsonpath={.items..phase})
 
