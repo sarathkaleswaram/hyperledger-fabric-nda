@@ -66,3 +66,17 @@ If running in local
     "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
 }
 ```
+
+If running in kubernetes
+```
+{
+    "connection_file": "connection-kubernetes.json",
+    "channel": "mychannel",
+    "chaincode": "nda",
+    "appAdmin": "admin",
+    "appAdminSecret": "adminpw",
+    "orgMSPID": "Org1MSP",
+    "caName": "nda-ca",
+    "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
+}
+```

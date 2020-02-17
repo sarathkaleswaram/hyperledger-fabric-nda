@@ -25,7 +25,7 @@
     },
     "peers": {
         "nda-peer0-org1": {
-            "url": "grpc://nda-peer0-org1:30751",
+            "url": "grpc://3.6.125.99:30751",
             "tlsCACerts": {
                 "path": "kubernetes/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
             },
@@ -34,7 +34,7 @@
             }
         },
         "nda-peer1-org1": {
-            "url": "grpc://nda-peer1-org1:30851",
+            "url": "grpc://3.6.125.99:30851",
             "tlsCACerts": {
                 "path": "kubernetes/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
             },
@@ -45,7 +45,7 @@
     },
     "certificateAuthorities": {
         "nda-ca": {
-            "url": "http://nda-ca:30754",
+            "url": "http://3.6.125.99:30754",
             "caName": "ca-org1",
             "tlsCACerts": {
                 "path": "kubernetes/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"

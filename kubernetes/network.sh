@@ -80,6 +80,7 @@ function networkUp() {
 
   filesPodStatus=$(kubectl get pods -l app=nda-copy-files --output=jsonpath={.items..phase})
 
+  echo
   while [ "${filesPodStatus}" != "Running" ]; do
     echo "Wating for Files Pod to run. Current status of Pod is ${filesPodStatus}"
     sleep 5;
@@ -87,7 +88,7 @@ function networkUp() {
       echo "There is an error in the Files pod. Please check logs."
       exit 1
     fi
-    filesPodStatus=$(kubectl get pods --selector=name=docker --output=jsonpath={.items..phase})
+    filesPodStatus=$(kubectl get pods -l app=nda-copy-files --output=jsonpath={.items..phase})
   done
 
   echo
@@ -97,51 +98,7 @@ function networkUp() {
   echo
   kubectl get pods
 
-  echo
-  echo "============== Copying artifacts and chaincode to Files Pod =============="
-  kubectl cp crypto-config/ nda-copy-files:/opt/share/
-  kubectl cp channel-artifacts/ nda-copy-files:/opt/share/
-  kubectl cp scripts/ nda-copy-files:/opt/share/
-  kubectl cp ../chaincode/ nda-copy-files:/opt/share/
-  echo "Copy Success"
-
-  echo
-  echo "============== Files in Files pod =============="
-  kubectl exec nda-copy-files ls /opt/share/
-  
-  echo
-  echo "============== Creating Deployments and Services =============="
-  kubectl create -f kube-files/deploy-orderer.yaml
-  kubectl create -f kube-files/deploy-peer0-org1.yaml
-  kubectl create -f kube-files/deploy-peer1-org1.yaml
-  kubectl create -f kube-files/deploy-ca.yaml
-  kubectl create -f kube-files/deploy-cli.yaml
-
-  echo
-  echo "============== Checking if all deployments are ready =============="
-
-  NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
-  while [ "${NUMPENDING}" != "0" ]; do
-    echo "Waiting on pending deployments. Deployments pending = ${NUMPENDING}"
-    NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
-    sleep 1
-  done
-
-  echo
-  kubectl get services
-  echo
-  kubectl get pods
-
-  echo
-  echo "Waiting for 5 seconds for peers and orderer to settle"
-  echo
-  sleep 5
-
-  kubectl exec $(kubectl get pod -l name=nda-cli -o jsonpath={.items..metadata.name}) scripts/script.sh
-  if [ $? -ne 0 ]; then
-    echo "ERROR !!!!"
-    exit 1
-  fi
+  startNetwork
 }
 
 function networkDown() {
@@ -154,6 +111,8 @@ function networkDown() {
   kubectl delete -f kube-files/deploy-peer1-org1.yaml
   kubectl delete -f kube-files/deploy-ca.yaml
   kubectl delete -f kube-files/deploy-cli.yaml
+  kubectl delete -f kube-files/deploy-explorer-db.yaml
+  kubectl delete -f kube-files/deploy-explorer.yaml
   kubectl delete -f kube-files/persistent-volume.yaml
   kubectl delete -f kube-files/pod-files.yaml
 
@@ -167,6 +126,8 @@ function delete() {
   kubectl delete -f kube-files/deploy-peer1-org1.yaml
   kubectl delete -f kube-files/deploy-ca.yaml
   kubectl delete -f kube-files/deploy-cli.yaml
+  kubectl delete -f kube-files/deploy-explorer-db.yaml
+  kubectl delete -f kube-files/deploy-explorer.yaml
 
   echo
   kubectl get services
@@ -179,14 +140,20 @@ function deploy() {
   kubectl exec nda-copy-files -- rm -r /opt/share/crypto-config
   kubectl exec nda-copy-files -- rm -r /opt/share/channel-artifacts
   kubectl exec nda-copy-files -- rm -r /opt/share/scripts
+  kubectl exec nda-copy-files -- rm -r /opt/share/explorer
   kubectl exec nda-copy-files -- rm -r /opt/share/chaincode
   echo "Delete Success"
 
+  startNetwork
+}
+
+function startNetwork() {
   echo
   echo "============== Copying artifacts and chaincode to Files Pod =============="
   kubectl cp crypto-config/ nda-copy-files:/opt/share/
   kubectl cp channel-artifacts/ nda-copy-files:/opt/share/
   kubectl cp scripts/ nda-copy-files:/opt/share/
+  kubectl cp explorer/ nda-copy-files:/opt/share/
   kubectl cp ../chaincode/ nda-copy-files:/opt/share/
   echo "Copy Success"
 
@@ -218,16 +185,76 @@ function deploy() {
   kubectl get pods
 
   echo
-  echo "Waiting for 5 seconds for peers and orderer to settle"
+  echo "Waiting for 10 seconds for peers and orderer to settle"
   echo
-  sleep 5
+  sleep 10
 
   kubectl exec $(kubectl get pod -l name=nda-cli -o jsonpath={.items..metadata.name}) scripts/script.sh
   if [ $? -ne 0 ]; then
     echo "ERROR !!!!"
     exit 1
   fi
+
+  echo
+  echo "============== Starting Blockchain Explorer =============="
+  startExplorer
+
+  echo
+  echo "============== Starting Backend API =============="
+  startAPI
+
+  echo
+  echo "============== NDA Started Successfully =============="
+  showPorts
 }
+
+function startExplorer() {
+  kubectl create -f kube-files/deploy-explorer-db.yaml
+
+  echo
+  explorerDBStatus=$(kubectl get pods -l name=nda-explorer-db --output=jsonpath={.items..phase})
+
+  while [ "${explorerDBStatus}" != "Running" ]; do
+    echo "Wating for Explorer Database to run. Current status of Deployment is ${explorerDBStatus}"
+    sleep 5;
+    if [ "${explorerDBStatus}" == "Error" ]; then
+      echo "There is an error in the Explorer Deployment. Please check logs."
+      exit 1
+    fi
+    explorerDBStatus=$(kubectl get pods -l name=nda-explorer-db --output=jsonpath={.items..phase})
+  done
+
+  echo
+  kubectl create -f kube-files/deploy-explorer.yaml
+
+  echo
+  NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
+  while [ "${NUMPENDING}" != "0" ]; do
+    echo "Waiting on pending deployments. Deployments pending = ${NUMPENDING}"
+    NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
+    sleep 1
+  done
+
+  echo
+  kubectl get services
+  echo
+  kubectl get pods
+}
+
+function startAPI() {
+  echo "TODO: api"
+}
+
+function showPorts() {
+  IP_ADDRESS="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+  echo "--------------------------------------------------------------"
+  echo "CouchDB running on: http://${IP_ADDRESS}:30984"
+  echo "Backend API running on: http://${IP_ADDRESS}:30000"
+  echo "Blockchain Explorer running on: http://${IP_ADDRESS}:30080"
+  echo "User: admin, Password: adminpw"
+  echo "--------------------------------------------------------------"
+}
+
 
 CHANNEL_NAME=mychannel
 SYS_CHANNEL=nda-sys-channel

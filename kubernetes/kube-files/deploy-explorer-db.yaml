@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: blockchain-explorer-db
+  name: nda-explorer-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: blockchain-explorer-db
+      name: nda-explorer-db
   template:
     metadata:
       labels:
-        name: blockchain-explorer-db
+        name: nda-explorer-db
     spec:
       volumes:
         - name: ndafiles
           persistentVolumeClaim:
             claimName: nda-pvc
       containers:
-        - name: postgres
-          image: postgres:10.4-alpine
+        - name: nda-explorer-db
+          image: hyperledger/explorer-db:latest
           env:
             - name: DATABASE_DATABASE
               value: fabricexplorer
@@ -27,25 +27,25 @@ spec:
             - name: DATABASE_PASSWORD
               value: password
           volumeMounts:
-            - mountPath: /fabric
+            - mountPath: /docker-entrypoint-initdb.d/createdb.sh
               name: ndafiles
+              subPath: explorer/createdb.sh
           ports:
-            - containerPort: 5432
+            - name: psql
+              containerPort: 5432
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: blockchain-explorer-db
-  labels:
-    run: explorer-db
+  name: nda-explorer-db
 spec:
-  type: NodePort
   selector:
-    name: explorer-db
+    name: nda-explorer-db
+  type: NodePort
   ports:
-    - protocol: TCP
+    - name: psql
+      protocol: TCP
       port: 5432
       targetPort: 5432
       nodePort: 30432
-      name: pgsql

@@ -1,0 +1,93 @@
+{
+	"name": "nda-kubernetes",
+	"version": "1.0.0",
+	"client": {
+		"tlsEnable": false,
+		"adminUser": "admin",
+		"adminPassword": "adminpw",
+		"enableAuthentication": true,
+		"organization": "Org1MSP",
+		"channel": "mychannel",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		},
+		"credentialStore": {
+			"path": "./tmp/credentialStore_Org1/credential",
+			"cryptoStore": {
+				"path": "./tmp/credentialStore_Org1/crypto"
+			}
+		}
+	},
+	"channels": {
+		"mychannel": {
+			"peers": {
+				"nda-peer0-org1": {},
+				"nda-peer1-org1": {}
+			},
+			"orderers": {
+				"nda-orderer": {}
+			},
+			"connection": {
+				"timeout": {
+					"peer": {
+						"endorser": "6000",
+						"eventHub": "6000",
+						"eventReg": "6000"
+					}
+				}
+			}
+		}
+	},
+	"organizations": {
+		"Org1MSP": {
+			"mspid": "Org1MSP",
+			"fullpath": false,
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/cd2664437bef20868b447c35ae93a1af130be9ba909df899a6aa01c5e75d1d87_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
+			}
+		},
+		"OrdererMSP": {
+			"mspid": "OrdererMSP",
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore/e3851b902614a09875526565c5f5e2035341b3809e5f99debed180a2e13b4eef_sk"
+			}
+		}
+	},
+	"peers": {
+		"nda-peer0-org1": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+			},
+			"url": "grpc://nda-peer0-org1:30751",
+			"eventUrl": "grpc://nda-peer0-org1:30752",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.org1.example.com"
+			}
+		},
+		"nda-peer1-org1": {
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt"
+			},
+			"url": "grpc://nda-peer1-org1:30851",
+			"eventUrl": "grpc://nda-peer1-org1:30852",
+			"grpcOptions": {
+				"ssl-target-name-override": "peer0.org2.example.com"
+			}
+		}
+	},
+	"orderers": {
+		"nda-orderer": {
+			"url": "grpc://nda-orderer:30750"
+		}
+	},
+    "configtxgenToolPath": "/fabric-path/workspace/fabric-samples/bin",
+    "license": "Apache-2.0"
+}

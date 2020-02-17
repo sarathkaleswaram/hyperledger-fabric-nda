@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nda-explorer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nda-explorer
+  template:
+    metadata:
+      labels:
+        name: nda-explorer
+    spec:
+      volumes:
+        - name: ndafiles
+          persistentVolumeClaim:
+            claimName: nda-pvc
+      containers:
+        - name: nda-explorer
+          image: hyperledger/explorer:latest
+          command: ["sh", "-c", "sleep 16&& node /opt/explorer/main.js && tail -f /dev/null"]
+          env:
+            - name: DATABASE_HOST
+              value: nda-explorer-db
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: fabricexplorer
+            - name: DATABASE_USERNAME
+              value: hppoc
+            - name: DATABASE_PASSWORD
+              value: password
+          volumeMounts:
+            - mountPath: /opt/explorer/app/platform/fabric/config.json
+              name: ndafiles
+              subPath: explorer/config.json
+            - mountPath: /opt/explorer/app/platform/fabric/connection-profile/nda-kubernetes.json
+              name: ndafiles
+              subPath: explorer/nda-kubernetes.json
+            - mountPath: /tmp/crypto
+              name: ndafiles
+              subPath: crypto-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nda-explorer
+spec:
+  selector:
+    name: nda-explorer
+  type: NodePort
+  ports:
+    - name: explorer
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080

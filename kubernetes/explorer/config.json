@@ -1,0 +1,9 @@
+{
+	"network-configs": {
+		"nda-kubernetes": {
+			"name": "nda-kubernetes",
+			"profile": "./connection-profile/nda-kubernetes.json"
+		}
+	},
+	"license": "Apache-2.0"
+}
