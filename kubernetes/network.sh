@@ -243,12 +243,12 @@ function startExplorer() {
   echo "============== Generating Wallet =============="
 
   curl -X POST \
-    http://localhost:3000/enrollAdmin \
+    http://localhost:30000/enrollAdmin \
     -H 'content-type: application/json' 
   echo
 
   curl -X POST \
-    http://localhost:3000/registerParty \
+    http://localhost:30000/registerParty \
     -H 'content-type: application/json' \
     -d '{
       "name": "Blockmatrix",
