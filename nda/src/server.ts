@@ -13,8 +13,9 @@ import getNDATxs from "./api/getNDATxs"
 
 const app = express()
 const PORT = process.env.PORT || 3000
+const MONGO_URL = process.env.MONGO_URL || '127.0.0.1:27017'
 
-let mongoConnectionString = "mongodb://127.0.0.1:27017/nda";
+let mongoConnectionString = `mongodb://${MONGO_URL}/nda`;
 
 mongoose.connect(mongoConnectionString, { useCreateIndex: true, useNewUrlParser: true, useFindAndModify: false });
 let db = mongoose.connection;
