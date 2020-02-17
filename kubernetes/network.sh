@@ -301,7 +301,7 @@ function startAPI() {
 function showPorts() {
   IP_ADDRESS="$(dig +short myip.opendns.com @resolver1.opendns.com)"
   echo "--------------------------------------------------------------"
-  echo "CouchDB running on: http://${IP_ADDRESS}:30984"
+  echo "CouchDB running on: http://${IP_ADDRESS}:30984/_utils/"
   echo "Backend API running on: http://${IP_ADDRESS}:30000"
   echo "User: blockmatrix, Password: password"
   echo "Blockchain Explorer running on: http://${IP_ADDRESS}:30080"
