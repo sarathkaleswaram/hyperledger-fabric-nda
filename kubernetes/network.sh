@@ -113,7 +113,7 @@ function networkDown() {
   kubectl delete -f kube-files/deploy-explorer-db.yaml
   kubectl delete -f kube-files/deploy-explorer.yaml
   kubectl delete -f kube-files/deploy-backend-mongodb.yaml
-  kubectl create -f kube-files/deploy-backend-api.yaml
+  kubectl delete -f kube-files/deploy-backend-api.yaml
   kubectl delete -f kube-files/persistent-volume.yaml
   kubectl delete -f kube-files/pod-files.yaml
 
@@ -130,7 +130,7 @@ function delete() {
   kubectl delete -f kube-files/deploy-explorer-db.yaml
   kubectl delete -f kube-files/deploy-explorer.yaml
   kubectl delete -f kube-files/deploy-backend-mongodb.yaml
-  kubectl create -f kube-files/deploy-backend-api.yaml
+  kubectl delete -f kube-files/deploy-backend-api.yaml
 
   echo
   kubectl get services
