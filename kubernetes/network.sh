@@ -112,6 +112,8 @@ function networkDown() {
   kubectl delete -f kube-files/deploy-cli.yaml
   kubectl delete -f kube-files/deploy-explorer-db.yaml
   kubectl delete -f kube-files/deploy-explorer.yaml
+  kubectl delete -f kube-files/deploy-backend-mongodb.yaml
+  kubectl create -f kube-files/deploy-backend-api.yaml
   kubectl delete -f kube-files/persistent-volume.yaml
   kubectl delete -f kube-files/pod-files.yaml
 
@@ -127,6 +129,8 @@ function delete() {
   kubectl delete -f kube-files/deploy-cli.yaml
   kubectl delete -f kube-files/deploy-explorer-db.yaml
   kubectl delete -f kube-files/deploy-explorer.yaml
+  kubectl delete -f kube-files/deploy-backend-mongodb.yaml
+  kubectl create -f kube-files/deploy-backend-api.yaml
 
   echo
   kubectl get services
@@ -238,27 +242,6 @@ function startExplorer() {
   kubectl get services
   echo
   kubectl get pods
-
-  echo
-  echo "============== Generating Wallet =============="
-
-  curl -X POST \
-    http://localhost:30000/enrollAdmin \
-    -H 'content-type: application/json' 
-  echo
-
-  curl -X POST \
-    http://localhost:30000/registerParty \
-    -H 'content-type: application/json' \
-    -d '{
-      "name": "Blockmatrix",
-      "ceo": "Praveen",
-      "location": "Hyderabad",
-      "username": "blockmatrix",
-      "password": "password",
-      "type": "admin"
-    }'
-  echo
 }
 
 function startAPI() {
@@ -292,6 +275,27 @@ function startAPI() {
   kubectl get services
   echo
   kubectl get pods
+
+  echo
+  echo "============== Generating Wallet =============="
+
+  curl -X POST \
+    http://localhost:30000/enrollAdmin \
+    -H 'content-type: application/json' 
+  echo
+
+  curl -X POST \
+    http://localhost:30000/registerParty \
+    -H 'content-type: application/json' \
+    -d '{
+      "name": "Blockmatrix",
+      "ceo": "Praveen",
+      "location": "Hyderabad",
+      "username": "blockmatrix",
+      "password": "password",
+      "type": "admin"
+    }'
+  echo
 }
 
 function showPorts() {
