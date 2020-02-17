@@ -141,6 +141,8 @@ function init() {
         "password": "password",
         "type": "admin"
       }'
+      
+    echo
   fi
 }
 

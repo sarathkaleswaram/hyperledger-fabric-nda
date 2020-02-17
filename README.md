@@ -77,6 +77,6 @@ If running in kubernetes
     "appAdminSecret": "adminpw",
     "orgMSPID": "Org1MSP",
     "caName": "nda-ca",
-    "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
+    "gatewayDiscovery": { "enabled": true, "asLocalhost": false }
 }
 ```

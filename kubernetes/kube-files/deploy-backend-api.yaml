@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nda-backend-api
-          image: sarathkaleswaram/nda-backend:1.0.1
+          image: sarathkaleswaram/nda-backend:1.0.2
           env:
             - name: MONGO_URL
               value: nda-backend-mongodb:27017

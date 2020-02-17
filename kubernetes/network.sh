@@ -238,10 +238,60 @@ function startExplorer() {
   kubectl get services
   echo
   kubectl get pods
+
+  echo
+  echo "============== Generating Wallet =============="
+
+  curl -X POST \
+    http://localhost:3000/enrollAdmin \
+    -H 'content-type: application/json' 
+  echo
+
+  curl -X POST \
+    http://localhost:3000/registerParty \
+    -H 'content-type: application/json' \
+    -d '{
+      "name": "Blockmatrix",
+      "ceo": "Praveen",
+      "location": "Hyderabad",
+      "username": "blockmatrix",
+      "password": "password",
+      "type": "admin"
+    }'
+  echo
 }
 
 function startAPI() {
-  echo "TODO: api"
+  kubectl create -f kube-files/deploy-backend-mongodb.yaml
+
+  echo
+  backendMongoDBStatus=$(kubectl get pods -l name=nda-backend-mongodb --output=jsonpath={.items..phase})
+
+  while [ "${backendMongoDBStatus}" != "Running" ]; do
+    echo "Wating for Explorer Database to run. Current status of Deployment is ${backendMongoDBStatus}"
+    sleep 5;
+    if [ "${backendMongoDBStatus}" == "Error" ]; then
+      echo "There is an error in the Explorer Deployment. Please check logs."
+      exit 1
+    fi
+    backendMongoDBStatus=$(kubectl get pods -l name=nda-backend-mongodb --output=jsonpath={.items..phase})
+  done
+
+  echo
+  kubectl create -f kube-files/deploy-backend-api.yaml
+
+  echo
+  NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
+  while [ "${NUMPENDING}" != "0" ]; do
+    echo "Waiting on pending deployments. Deployments pending = ${NUMPENDING}"
+    NUMPENDING=$(kubectl get deployments | grep nda | awk '{print $2}' | grep 0 | wc -l | awk '{print $1}')
+    sleep 1
+  done
+
+  echo
+  kubectl get services
+  echo
+  kubectl get pods
 }
 
 function showPorts() {
@@ -249,6 +299,7 @@ function showPorts() {
   echo "--------------------------------------------------------------"
   echo "CouchDB running on: http://${IP_ADDRESS}:30984"
   echo "Backend API running on: http://${IP_ADDRESS}:30000"
+  echo "User: blockmatrix, Password: password"
   echo "Blockchain Explorer running on: http://${IP_ADDRESS}:30080"
   echo "User: admin, Password: adminpw"
   echo "--------------------------------------------------------------"
