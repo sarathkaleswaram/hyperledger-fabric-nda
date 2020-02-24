@@ -57,8 +57,15 @@ function networkDown() {
   export NDA_CA1_PRIVATE_KEY=$(cd ../crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
 
   docker stack rm $DOCKER_STACK
+
   clearContainers
   removeUnwantedImages
+
+  echo
+  echo "Waiting for 5 seconds"
+  echo
+  sleep 5
+
   docker volume prune
   docker system prune
   echo
