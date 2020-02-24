@@ -10,7 +10,7 @@ function printHelp() {
 }
 
 function createNetwork() {
-  docker network create -d overlay nda
+  docker network create -d overlay --attachable nda
 }
 
 function networkUp() {
@@ -22,6 +22,11 @@ function networkUp() {
     echo "ERROR !!!! Unable to start network"
     exit 1
   fi
+
+  echo
+  echo "Waiting for 10 seconds for peers and orderer to settle"
+  echo
+  sleep 10
 
   docker exec $(docker ps --format='{{.Names}}' | grep _cli) scripts/script.sh
   if [ $? -ne 0 ]; then
