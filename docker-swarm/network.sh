@@ -14,7 +14,7 @@ function createNetwork() {
 }
 
 function networkUp() {
-  # export NDA_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+  export NDA_CA1_PRIVATE_KEY=$(cd crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
 
   docker stack deploy -c docker-compose.yaml $DOCKER_STACK
   docker ps -a
@@ -59,8 +59,8 @@ function networkDown() {
   docker stack rm $DOCKER_STACK
   clearContainers
   removeUnwantedImages
-  docker system prune
   docker volume prune
+  docker system prune
   echo
   
 }
