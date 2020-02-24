@@ -1,4 +1,4 @@
-# Manual Steps
+# Manual Steps - Tested on minikube
 
 ```bash
 cryptogen generate --config=./crypto-config.yaml
