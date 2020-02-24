@@ -1,7 +1,7 @@
 .vscode
 
-/channel-artifacts/*.tx
-/channel-artifacts/*.block
-/crypto-config/*
+# /channel-artifacts/*.tx
+# /channel-artifacts/*.block
+# /crypto-config/*
 
 data
