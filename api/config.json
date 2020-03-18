@@ -1,0 +1,10 @@
+{
+    "connection_file": "connection-local.json",
+    "channel": "mychannel",
+    "chaincode": "nda",
+    "appAdmin": "admin",
+    "appAdminSecret": "adminpw",
+    "orgMSPID": "Org1MSP",
+    "caName": "ca.org1.example.com",
+    "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
+}

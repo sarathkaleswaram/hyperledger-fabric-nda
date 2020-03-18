@@ -1,3 +1,4 @@
+---
 Organizations:
     - &OrdererOrg
         Name: OrdererOrg
@@ -34,11 +35,15 @@ Organizations:
 
 Capabilities:
     Channel: &ChannelCapabilities
-        V1_3: true
+        V1_4_3: true
+        V1_3: false
+        V1_1: false
     Orderer: &OrdererCapabilities
-        V1_1: true
+        V1_4_2: true
+        V1_1: false
     Application: &ApplicationCapabilities
-        V1_3: true
+        V1_4_2: true
+        V1_3: false
         V1_2: false
         V1_1: false
 
@@ -69,6 +74,12 @@ Orderer: &OrdererDefaults
     Kafka:
         Brokers:
             - 127.0.0.1:9092
+    EtcdRaft:
+        Consenters:
+            - Host: orderer.example.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
     Organizations:
     Policies:
         Readers:
@@ -99,7 +110,7 @@ Channel: &ChannelDefaults
         <<: *ChannelCapabilities
 
 Profiles:
-    NDA_Profile:
+    NDAOrdererGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
@@ -107,12 +118,16 @@ Profiles:
                 - *OrdererOrg
             Capabilities:
                 <<: *OrdererCapabilities
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org1
-        Consortium: SampleConsortium
         Consortiums:
             SampleConsortium:
                 Organizations:
                     - *Org1
+    NDAChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+            Capabilities:
+                <<: *ApplicationCapabilities

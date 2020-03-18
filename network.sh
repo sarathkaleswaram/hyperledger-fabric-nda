@@ -10,17 +10,11 @@ function printHelp() {
 }
 
 function generateCerts() {
-  which cryptogen
-  if [ "$?" -ne 0 ]; then
-    echo "cryptogen tool not found. exiting"
-    exit 1
-  fi
-  echo
   echo "============== Generate certificates using cryptogen tool =============="
   if [ -d "crypto-config" ]; then
     rm -Rf crypto-config
   fi
-  cryptogen generate --config=./crypto-config.yaml
+  ./bin/cryptogen generate --config=./crypto-config.yaml
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate certificates..."
@@ -30,13 +24,6 @@ function generateCerts() {
 }
 
 function generateChannelArtifacts() {
-  which configtxgen
-  if [ "$?" -ne 0 ]; then
-    echo "configtxgen tool not found. exiting"
-    exit 1
-  fi
-  echo
-
   if [ -d channel-artifacts ]; then
     echo    
 	else
@@ -44,7 +31,7 @@ function generateChannelArtifacts() {
 	fi
 
   echo "==============  Generating Orderer Genesis block =============="
-  configtxgen -profile NDA_Profile -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
+  ./bin/configtxgen -profile NDAOrdererGenesis -channelID $SYS_CHANNEL -outputBlock ./channel-artifacts/genesis.block
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate orderer genesis block..."
@@ -52,7 +39,7 @@ function generateChannelArtifacts() {
   fi
   echo
   echo "==============  Generating channel configuration transaction 'channel.tx' =============="
-  configtxgen -profile NDA_Profile -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+  ./bin/configtxgen -profile NDAChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate channel configuration transaction..."
@@ -60,7 +47,7 @@ function generateChannelArtifacts() {
   fi
   echo
   echo "==============  Generating anchor peer update for Org1MSP  =============="
-  configtxgen -profile NDA_Profile -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+  ./bin/configtxgen -profile NDAChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
   res=$?
   if [ $res -ne 0 ]; then
     echo "Failed to generate anchor peer update for Org1MSP..."
@@ -96,13 +83,13 @@ function networkDown() {
   y | docker network prune
   echo
   
-  rm -rf nda/wallet
+  rm -rf api/wallet
   sudo rm -rf data/
   echo
 }
 
 function startAPI() {
-  cd nda
+  cd api
   echo
 	if [ -d node_modules ]; then
 		echo "============== node modules installed already ============="
@@ -117,7 +104,7 @@ function startAPI() {
 }
 
 function init() {
-  cd nda
+  cd api
   if [ -d wallet/admin ]; then
     echo "============== Wallet already exists ============="
   else 

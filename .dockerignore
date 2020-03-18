@@ -6,7 +6,7 @@ ibm_cds
 scripts
 data
 
-nda/node_modules
+api/node_modules
 
 configtx.yaml
 crypto-config.yaml
